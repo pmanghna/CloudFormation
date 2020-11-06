@@ -1,0 +1,16 @@
+Resources:
+  MyEc2:
+    Type: AWS::EC2::Instance
+    Properties:
+      IamInstanceProfile: 'ec2InstanceProfile'
+      ImageId: 'ami-0fffffffff'
+      KeyName: 'us-east-1'
+      InstanceType: 't2.large'
+      SecurityGroupIds:
+        - 'sg-0650143ffffff'
+      UserData:
+        Fn::Base64: |
+           <powershell>
+           Start-SSMAutomationExecution -DocumentName AWS-StartEC2Instance -Parameter @{'AutomationAssumeRole'='arn:aws:iam::012345678910:role/ecsInstanceRole';'InstanceId'='i-02bc8e3d3ffffffff0'} > C:\command1output.txt
+           Start-SSMAutomationExecution -DocumentName AWS-AttachIAMToInstance -Parameter @{'AutomationAssumeRole'='arn:aws:iam::012345678910:role/ecsInstanceRole';'InstanceId'='i-02bc8e3ffffff0'; 'RoleName' = 'ecsInstanceRole'} > C:\command2output.txt
+           </powershell>

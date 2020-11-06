@@ -1,0 +1,26 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+
+    "Parameters" : {
+        "myApp" : {
+            "Type" : "String",
+            "Description" : "A Label applied to resources"
+        }
+    },
+    "Resources": {
+        "myAppEventRule": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+              "Description": "EventRule",
+              "ScheduleExpression": "cron(0 12 * * ? *)",
+              "State": "ENABLED",
+              "Targets": [
+                  {
+                "Arn": "arn:aws:ssm:us-east-1:012345678910:automation-definition/AWS-CreateSnapshot:1",
+                "Id": { "Fn::Join" : [ "-", [ "CORE", { "Ref": "myApp" }, "Rule" ] ] },
+                "RoleArn": "arn:aws:iam::012345678910:role/Admin"
+              }]
+            }
+        }
+    }
+}

@@ -1,0 +1,69 @@
+{
+    "Resources": {
+        "VPCE": {
+            "Type": "AWS::EC2::VPCEndpoint",
+            "Properties": {
+                "PrivateDnsEnabled": true,
+                "SecurityGroupIds": [
+                    "sg-xxxxxxxxxx"
+                ],
+                "ServiceName": "com.amazonaws.us-east-1.logs",
+                "SubnetIds": [
+                    "subnet-xxxxxxx"
+                ],
+                "VpcEndpointType": "Interface",
+                "VpcId": "vpc-xxxxxxx"
+            }
+        }
+    },
+    "Outputs": {
+        "DNSName": {
+            "Description": "Value of the DNS Name",
+            "Value": {
+                "Fn::Select": [
+                    1,
+                    {
+                        "Fn::Split": [
+                            ":",
+                            {
+                                "Fn::Select": [
+                                    0,
+                                    {
+                                        "Fn::GetAtt": [
+                                            "VPCE",
+                                            "DnsEntries"
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "HostedZone": {
+            "Description": "Value of the Hosted Zone",
+            "Value": {
+                "Fn::Select": [
+                    0,
+                    {
+                        "Fn::Split": [
+                            ":",
+                            {
+                                "Fn::Select": [
+                                    0,
+                                    {
+                                        "Fn::GetAtt": [
+                                            "VPCE",
+                                            "DnsEntries"
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

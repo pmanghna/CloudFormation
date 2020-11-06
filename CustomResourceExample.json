@@ -1,0 +1,87 @@
+{"Resources":{
+        "LambdaExecutionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                ],
+                "Policies": [
+                    {
+                        "PolicyName": "LambdaVPCendpointRolePolicy0",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Action": [
+                                        "*"
+                                    ],
+                                    "Resource": "*",
+                                    "Effect": "Allow"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Action": [
+                                "sts:AssumeRole"
+                            ],
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        },   
+ "CreateUniqueID": {
+            "DependsOn": "MyLambdaFunction", 
+            "Properties": {
+                "CreateUniqueID": "true", 
+                "Region": {
+                    "Ref": "AWS::Region"
+                }, 
+                "ServiceToken": {
+                    "Fn::GetAtt": [
+                        "MyLambdaFunction", 
+                        "Arn"
+                    ]
+                }
+            }, 
+            "Type": "Custom::CreateUUID"
+        }  ,       
+"MyLambdaFunction": {
+  "Type": "AWS::Lambda::Function",
+  "Properties": {
+     "FunctionName": "TestCS1", 
+    "Code": {
+      "ZipFile": {
+        "Fn::Join": ["\n", [
+          "var response = require('cfn-response');",
+          "exports.handler = function(event, context) {",
+          " if (event.RequestType == 'Create' || event.RequestType == 'Update'|| event.RequestType == 'Delete') {",
+          " response.send(event, context, response.SUCCESS);",
+          " return;", " }",
+          "};"
+        ]]
+      }
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs6.10",
+    "Timeout": "30",
+    "Role": {
+      "Fn::GetAtt": [
+        "LambdaExecutionRole", "Arn"
+      ]
+    }
+  }
+}
+}
+}
+
